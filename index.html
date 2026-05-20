@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi Rutina">
+<meta name="theme-color" content="#ffffff">
+<title>Mi Rutina Diaria</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-mid: #378ADD;
+    --green: #0F6E56;
+    --green-light: #E1F5EE;
+    --green-mid: #1D9E75;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --amber-mid: #BA7517;
+    --red-light: #FCEBEB;
+    --red-mid: #E24B4A;
+    --gray-light: #F1EFE8;
+    --gray-mid: #888780;
+    --text: #1a1a1a;
+    --text-sec: #5f5e5a;
+    --text-ter: #888780;
+    --border: rgba(0,0,0,0.1);
+    --bg: #f8f8f6;
+    --card: #ffffff;
+    --radius: 14px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text: #f0efe8;
+      --text-sec: #b4b2a9;
+      --text-ter: #5f5e5a;
+      --border: rgba(255,255,255,0.1);
+      --bg: #1c1c1a;
+      --card: #2a2a28;
+      --blue-light: #0c447c;
+      --green-light: #085041;
+      --amber-light: #633806;
+      --gray-light: #2c2c2a;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    padding-bottom: calc(80px + var(--safe-bot));
+  }
+
+  .header {
+    background: var(--card);
+    border-bottom: 0.5px solid var(--border);
+    padding: calc(16px + var(--safe-top)) 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); }
+  .header-date { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+  .reset-btn {
+    background: var(--gray-light);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-sec);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .progress-wrap { margin-bottom: 4px; }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-ter); margin-bottom: 6px; }
+  .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green-mid); border-radius: 3px; transition: width 0.3s ease; }
+
+  .tabs {
+    display: flex;
+    background: var(--card);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-sec);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    border-bottom: 2.5px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-ter);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 16px 20px 6px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    background: var(--card);
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+    -webkit-user-select: none;
+  }
+  .item:active { background: var(--gray-light); }
+  .item.skipped { opacity: 0.4; }
+
+  .circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: transparent;
+    font-size: 14px;
+  }
+  .circle.done { background: var(--green-mid); border-color: var(--green-mid); color: white; }
+
+  .item-body { flex: 1; }
+  .item-title { font-size: 15px; color: var(--text); font-weight: 500; }
+  .item-title.done { color: var(--text-ter); text-decoration: line-through; text-decoration-color: var(--text-ter); }
+  .item-sub { font-size: 12px; color: var(--text-ter); margin-top: 2px; }
+
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-warn { background: var(--amber-light); color: var(--amber); }
+  .badge-key { background: var(--blue-light); color: var(--blue); }
+
+  .llegue-section {
+    padding: 16px 20px;
+    background: var(--card);
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-top: 8px;
+  }
+  .llegue-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--green-mid);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+  }
+  .llegue-btn:active { opacity: 0.8; }
+  .llegue-btn:disabled { background: var(--gray-mid); cursor: default; opacity: 0.7; }
+
+  .ai-card {
+    margin: 12px 20px;
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: none;
+  }
+  .ai-card.visible { display: block; }
+  .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid); flex-shrink: 0; }
+  .ai-label { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; }
+  .ai-time { font-size: 12px; color: var(--text-ter); margin-left: auto; }
+  .ai-body { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+  .ai-loading { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .ai-dot-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green-mid); animation: pulse 1.2s ease-in-out infinite; }
+  .ai-dot-pulse:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dot-pulse:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border-top: 0.5px solid var(--border);
+    padding: 8px 0 calc(8px + var(--safe-bot));
+    display: flex;
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--text-ter);
+    font-size: 10px;
+  }
+  .nav-btn.active { color: var(--blue); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-ter);
+    font-size: 14px;
+  }
+  .empty-state .big { font-size: 40px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">Mi rutina</div>
+      <div class="header-date" id="fecha"></div>
+    </div>
+    <button class="reset-btn" onclick="resetDia()">Reiniciar</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span>Progreso de hoy</span>
+      <span id="prog-text">0 / 0</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('manana', this)">☀️ Mañana</button>
+  <button class="tab" onclick="showTab('tarde', this)">🌙 Tarde-noche</button>
+</div>
+
+<div id="tab-manana">
+  <div class="section-label">Despertar</div>
+  <div class="item" onclick="toggle(this)" data-id="m1">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Despierta sin snooze</div>
+      <div class="item-sub">6:00 am · apaga la alarma de inmediato</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m2">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Primer vaso de agua</div>
+      <div class="item-sub">6:02 am · antes de cualquier otra cosa</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m3">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Baño — rutina natural</div>
+      <div class="item-sub">6:05 am</div>
+    </div>
+    <span class="badge badge-warn">flexible</span>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m4">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Ropa de ejercicio</div>
+      <div class="item-sub">6:25 am · ya debió quedar lista anoche</div>
+    </div>
+  </div>
+
+  <div class="section-label">Activación</div>
+  <div class="item" onclick="toggle(this)" data-id="m5">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Salir a caminar 20 min</div>
+      <div class="item-sub">6:30 am · primeros 5 min sin audífonos</div>
+    </div>
+    <span class="badge badge-key">clave</span>
+  </div>
+
+  <div class="section-label">Preparación</div>
+  <div class="item" onclick="toggle(this)" data-id="m6">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Ducha 15 min</div>
+      <div class="item-sub">6:50 am · termina con 30 seg de agua fría</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m7">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Vestirse para el trabajo</div>
+      <div class="item-sub">7:05 am · ropa lista desde anoche</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m8">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Desayuno con proteína</div>
+      <div class="item-sub">7:15 am · huevo, avena o frijoles</div>
+    </div>
+    <span class="badge badge-key">clave</span>
+  </div>
+
+  <div class="section-label">Salida</div>
+  <div class="item" onclick="toggle(this)" data-id="m9">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Calentar la moto 5 min</div>
+      <div class="item-sub">7:25 am · respira un momento</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="m10">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Salir — llegas a las 7:50</div>
+      <div class="item-sub">7:30 am · 20 min de camino</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-tarde" style="display:none;">
+
+  <div class="llegue-section">
+    <button class="llegue-btn" id="llegue-btn" onclick="llegueACasa()">
+      🏠 Ya llegué a casa
+    </button>
+  </div>
+
+  <div class="ai-card" id="ai-card">
+    <div class="ai-header">
+      <div class="ai-dot"></div>
+      <div class="ai-label">Tu plan de ahora</div>
+      <div class="ai-time" id="ai-time"></div>
+    </div>
+    <div class="ai-body" id="ai-body"></div>
+  </div>
+
+  <div class="section-label">Llegada</div>
+  <div class="item" onclick="toggle(this)" data-id="t1">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Desconéctate 15 min</div>
+      <div class="item-sub">5:00 pm · agua, silencio, reset</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t2">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Un pendiente importante</div>
+      <div class="item-sub">5:15 pm · 60 min · solo uno</div>
+    </div>
+    <span class="badge badge-key">clave</span>
+  </div>
+
+  <div class="section-label">Cena</div>
+  <div class="item" onclick="toggle(this)" data-id="t3">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Preparar o conseguir cena</div>
+      <div class="item-sub">6:15 pm · lista antes de las 7:30</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t4">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Cenar antes de las 8pm</div>
+      <div class="item-sub">7:00 pm · ligero · proteína + verdura</div>
+    </div>
+    <span class="badge badge-key">clave</span>
+  </div>
+
+  <div class="section-label">Tiempo libre</div>
+  <div class="item" onclick="toggle(this)" data-id="t5">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Tiempo libre — sin culpa</div>
+      <div class="item-sub">7:30 pm · serie, música, lo que quieras</div>
+    </div>
+  </div>
+
+  <div class="section-label">Cierre del día</div>
+  <div class="item" onclick="toggle(this)" data-id="t6">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">En casa</div>
+      <div class="item-sub">9:00 pm · inamovible</div>
+    </div>
+    <span class="badge badge-warn">límite</span>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t7">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Preparar el mañana</div>
+      <div class="item-sub">9:00 pm · ropa lista, pendientes revisados</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t8">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Llamar a tu esposa</div>
+      <div class="item-sub">9:30 pm · conexión real, no scroll</div>
+    </div>
+    <span class="badge badge-key">clave</span>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t9">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">Teléfono boca abajo</div>
+      <div class="item-sub">10:30 pm · sin pantallas</div>
+    </div>
+  </div>
+  <div class="item" onclick="toggle(this)" data-id="t10">
+    <div class="circle">✓</div>
+    <div class="item-body">
+      <div class="item-title">A dormir</div>
+      <div class="item-sub">11:00 pm · ciclo completo</div>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('manana', null); setNav(this)">
+    <span class="nav-icon">☀️</span>Mañana
+  </button>
+  <button class="nav-btn" onclick="showTab('tarde', null); setNav(this)">
+    <span class="nav-icon">🌙</span>Tarde
+  </button>
+</nav>
+
+<script>
+const STORAGE_KEY = 'rutina_v1';
+const LLEGUE_KEY = 'rutina_llegue';
+
+function hoy() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function cargarEstado() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const data = JSON.parse(raw);
+    if (data.fecha !== hoy()) return {};
+    return data.checks || {};
+  } catch(e) { return {}; }
+}
+
+function guardarEstado(checks) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ fecha: hoy(), checks }));
+}
+
+function cargarLlegue() {
+  try {
+    const raw = localStorage.getItem(LLEGUE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (data.fecha !== hoy()) return null;
+    return data;
+  } catch(e) { return null; }
+}
+
+function guardarLlegue(hora) {
+  localStorage.setItem(LLEGUE_KEY, JSON.stringify({ fecha: hoy(), hora }));
+}
+
+let checks = cargarEstado();
+
+function toggle(el) {
+  const id = el.dataset.id;
+  const circle = el.querySelector('.circle');
+  const title = el.querySelector('.item-title');
+  if (checks[id]) {
+    delete checks[id];
+    circle.classList.remove('done');
+    title.classList.remove('done');
+  } else {
+    checks[id] = true;
+    circle.classList.add('done');
+    title.classList.add('done');
+  }
+  guardarEstado(checks);
+  updateProgress();
+}
+
+function aplicarEstado() {
+  document.querySelectorAll('.item').forEach(function(el) {
+    const id = el.dataset.id;
+    const circle = el.querySelector('.circle');
+    const title = el.querySelector('.item-title');
+    if (checks[id]) {
+      circle.classList.add('done');
+      title.classList.add('done');
+    } else {
+      circle.classList.remove('done');
+      title.classList.remove('done');
+    }
+  });
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('.item').length;
+  const done = Object.keys(checks).length;
+  document.getElementById('prog-text').textContent = done + ' / ' + all;
+  const pct = all > 0 ? Math.round((done / all) * 100) : 0;
+  document.getElementById('prog-bar').style.width = pct + '%';
+}
+
+function resetDia() {
+  if (!confirm('¿Reiniciar todos los checks de hoy?')) return;
+  checks = {};
+  guardarEstado(checks);
+  localStorage.removeItem(LLEGUE_KEY);
+  aplicarEstado();
+  updateProgress();
+  document.getElementById('ai-card').classList.remove('visible');
+  document.getElementById('llegue-btn').disabled = false;
+  document.getElementById('llegue-btn').textContent = '🏠 Ya llegué a casa';
+}
+
+function showTab(name, btn) {
+  document.getElementById('tab-manana').style.display = name === 'manana' ? 'block' : 'none';
+  document.getElementById('tab-tarde').style.display = name === 'tarde' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  updateProgress();
+}
+
+function setNav(btn) {
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function formatHora(date) {
+  return date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+}
+
+function llegueACasa() {
+  const ahora = new Date();
+  const horaStr = formatHora(ahora);
+  const horaH = ahora.getHours();
+  const horaM = ahora.getMinutes();
+  const horaDecimal = horaH + horaM / 60;
+
+  guardarLlegue(horaStr);
+
+  const btn = document.getElementById('llegue-btn');
+  btn.disabled = true;
+  btn.textContent = '✓ Llegaste a las ' + horaStr;
+
+  const card = document.getElementById('ai-card');
+  card.classList.add('visible');
+  document.getElementById('ai-time').textContent = horaStr;
+  document.getElementById('ai-body').innerHTML = '<div class="ai-loading"><div class="ai-dot-pulse"></div><div class="ai-dot-pulse"></div><div class="ai-dot-pulse"></div></div>';
+
+  const prompt = `Eres el asistente personal de Miguel, un hombre de 30 años en proceso de mejorar su estilo de vida. Miguel tiene esta rutina de tarde-noche:
+
+- 5:00 pm: Llegar y desconectarse 15 min
+- 5:15 pm: Hacer un pendiente importante (60 min)
+- 6:15 pm: Preparar cena
+- 7:00 pm: Cenar (REGLA CLAVE: cenar antes de las 8pm)
+- 7:30 pm: Tiempo libre
+- 9:00 pm: Estar en casa (límite inamovible)
+- 9:00 pm: Preparar el mañana (ropa lista, pendientes)
+- 9:30 pm: Llamar a su esposa
+- 10:30 pm: Teléfono boca abajo
+- 11:00 pm: Dormir
+
+Miguel acaba de llegar a casa a las ${horaStr}. Son las ${horaH}:${String(horaM).padStart(2,'0')} horas.
+
+Analiza la hora de llegada y dile de forma cálida, directa y sin culpa:
+1. Qué pasos todavía puede hacer (y en qué orden realista)
+2. Cuáles ya no aplican por la hora (sin drama, sin regaño)
+3. Una sola cosa concreta en la que enfocarse esta noche
+
+Máximo 120 palabras. Tono de amigo que te conoce bien, no de coach motivacional. En español mexicano natural.`;
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    const texto = data.content && data.content[0] ? data.content[0].text : 'No pude conectarme. Pero ya llegaste — eso ya cuenta.';
+    document.getElementById('ai-body').textContent = texto;
+  })
+  .catch(function() {
+    document.getElementById('ai-body').textContent = 'Sin conexión ahorita. Pero ya llegaste a casa — eso ya es una victoria. Prepara el mañana y llámale a tu esposa.';
+  });
+}
+
+function setFecha() {
+  const d = new Date();
+  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('fecha').textContent = dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
+}
+
+const llegueGuardado = cargarLlegue();
+if (llegueGuardado) {
+  document.getElementById('llegue-btn').disabled = true;
+  document.getElementById('llegue-btn').textContent = '✓ Llegaste a las ' + llegueGuardado.hora;
+}
+
+setFecha();
+aplicarEstado();
+updateProgress();
+</script>
+</body>
+</html>
