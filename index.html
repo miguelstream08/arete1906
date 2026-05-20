@@ -4,252 +4,331 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Mi Rutina">
-<meta name="theme-color" content="#ffffff">
-<title>Mi Rutina Diaria</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ARETE 1906">
+<meta name="theme-color" content="#F28761">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>ARETE 1906</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  :root {
-    --blue: #185FA5;
-    --blue-light: #E6F1FB;
-    --blue-mid: #378ADD;
-    --green: #0F6E56;
-    --green-light: #E1F5EE;
-    --green-mid: #1D9E75;
-    --amber: #854F0B;
-    --amber-light: #FAEEDA;
-    --amber-mid: #BA7517;
-    --red-light: #FCEBEB;
-    --red-mid: #E24B4A;
-    --gray-light: #F1EFE8;
-    --gray-mid: #888780;
-    --text: #1a1a1a;
-    --text-sec: #5f5e5a;
-    --text-ter: #888780;
-    --border: rgba(0,0,0,0.1);
-    --bg: #f8f8f6;
-    --card: #ffffff;
-    --radius: 14px;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bot: env(safe-area-inset-bottom, 0px);
-  }
+:root {
+  --orange:    #FF6624;
+  --amber:     #FF9829;
+  --cream:     #F2F1EB;  /* F28761 es el crema cálido */
+  --blue:      #355CF5;
+  --navy:      #2329A8;
+  --cream-bg:  #F5F2EC;
+  --cream-dark:#E8E3D8;
+  --text:      #1A1B4B;
+  --text-sec:  #4A4B7A;
+  --text-ter:  #9A9BC0;
+  --border:    rgba(35,41,168,0.1);
+  --border-strong: rgba(35,41,168,0.2);
+  --card:      #FFFFFF;
+  --safe-top:  env(safe-area-inset-top, 0px);
+  --safe-bot:  env(safe-area-inset-bottom, 0px);
+}
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --text: #f0efe8;
-      --text-sec: #b4b2a9;
-      --text-ter: #5f5e5a;
-      --border: rgba(255,255,255,0.1);
-      --bg: #1c1c1a;
-      --card: #2a2a28;
-      --blue-light: #0c447c;
-      --green-light: #085041;
-      --amber-light: #633806;
-      --gray-light: #2c2c2a;
-    }
-  }
+html { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--cream-bg);
+  color: var(--text);
+  min-height: 100dvh;
+  padding-bottom: calc(80px + var(--safe-bot));
+  overflow-x: hidden;
+}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    padding-bottom: calc(80px + var(--safe-bot));
-  }
+/* ── SPLASH ── */
+#splash {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#splash.hidden { opacity: 0; transform: scale(1.04); pointer-events: none; }
+#splash img {
+  width: 90px; height: 90px; border-radius: 20px;
+  animation: splashPop 0.7s cubic-bezier(.34,1.56,.64,1) 0.2s both;
+}
+#splash-title {
+  font-size: 26px; font-weight: 800; letter-spacing: 6px;
+  color: var(--cream-bg);
+  animation: splashFade 0.6s ease 0.5s both;
+}
+#splash-sub {
+  font-size: 12px; color: rgba(245,242,236,0.5); letter-spacing: 2px;
+  animation: splashFade 0.6s ease 0.7s both;
+}
+#splash-bar {
+  width: 120px; height: 3px; background: rgba(255,255,255,0.15);
+  border-radius: 2px; overflow: hidden;
+  animation: splashFade 0.6s ease 0.8s both;
+}
+#splash-bar-fill {
+  height: 100%; width: 0%; background: var(--orange);
+  border-radius: 2px;
+  transition: width 1.2s ease;
+}
+@keyframes splashPop {
+  from { opacity:0; transform: scale(0.6); }
+  to   { opacity:1; transform: scale(1); }
+}
+@keyframes splashFade {
+  from { opacity:0; transform: translateY(8px); }
+  to   { opacity:1; transform: translateY(0); }
+}
 
-  .header {
-    background: var(--card);
-    border-bottom: 0.5px solid var(--border);
-    padding: calc(16px + var(--safe-top)) 20px 16px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+/* ── HEADER ── */
+.header {
+  background: var(--navy);
+  padding: calc(18px + var(--safe-top)) 20px 18px;
+  position: sticky; top: 0; z-index: 10;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--orange), var(--amber), var(--blue));
+}
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.header-title {
+  font-size: 22px; font-weight: 800; letter-spacing: 4px;
+  color: var(--cream-bg);
+}
+.header-date { font-size: 12px; color: rgba(245,242,236,0.5); margin-top: 3px; letter-spacing: 0.5px; }
+.reset-btn {
+  background: rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255,255,255,0.2);
+  border-radius: 20px; padding: 7px 15px;
+  font-size: 12px; color: rgba(245,242,236,0.7);
+  cursor: pointer; font-family: inherit; letter-spacing: 0.3px;
+  transition: background 0.2s;
+}
+.reset-btn:active { background: rgba(255,255,255,0.2); }
 
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-  .header-title { font-size: 22px; font-weight: 600; color: var(--text); }
-  .header-date { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
-  .reset-btn {
-    background: var(--gray-light);
-    border: none;
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--text-sec);
-    cursor: pointer;
-    font-family: inherit;
-  }
+.progress-wrap {}
+.progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: rgba(245,242,236,0.5); margin-bottom: 8px; }
+.progress-track { height: 4px; background: rgba(255,255,255,0.12); border-radius: 2px; overflow: hidden; }
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--orange), var(--amber));
+  border-radius: 2px; transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
 
-  .progress-wrap { margin-bottom: 4px; }
-  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-ter); margin-bottom: 6px; }
-  .progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--green-mid); border-radius: 3px; transition: width 0.3s ease; }
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--navy);
+  border-bottom: none;
+}
+.tab {
+  flex: 1; padding: 13px 0; text-align: center;
+  font-size: 13px; color: rgba(245,242,236,0.4);
+  cursor: pointer; border: none; background: none;
+  font-family: inherit; font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.25s; letter-spacing: 0.5px;
+}
+.tab.active { color: var(--cream-bg); border-bottom-color: var(--orange); font-weight: 700; }
 
-  .tabs {
-    display: flex;
-    background: var(--card);
-    border-bottom: 0.5px solid var(--border);
-  }
-  .tab {
-    flex: 1;
-    padding: 12px 0;
-    text-align: center;
-    font-size: 14px;
-    color: var(--text-sec);
-    cursor: pointer;
-    border: none;
-    background: none;
-    font-family: inherit;
-    border-bottom: 2.5px solid transparent;
-    transition: all 0.2s;
-  }
-  .tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px; font-weight: 800; color: var(--text-ter);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 20px 20px 8px;
+}
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-ter);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    padding: 16px 20px 6px;
-  }
+/* ── ITEMS ── */
+.item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 20px;
+  background: var(--card);
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer; user-select: none; -webkit-user-select: none;
+  transition: background 0.15s, transform 0.15s;
+  opacity: 0; transform: translateX(-18px);
+}
+.item.visible {
+  opacity: 1; transform: translateX(0);
+  transition: opacity 0.4s ease, transform 0.4s ease, background 0.15s;
+}
+.item:active { background: var(--cream-bg); transform: scale(0.99); }
 
-  .item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 20px;
-    background: var(--card);
-    border-bottom: 0.5px solid var(--border);
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s;
-    -webkit-user-select: none;
-  }
-  .item:active { background: var(--gray-light); }
-  .item.skipped { opacity: 0.4; }
+.circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+  font-size: 14px; color: transparent;
+  position: relative;
+}
+.circle.done {
+  background: linear-gradient(135deg, var(--orange), var(--amber));
+  border-color: transparent; color: white;
+  transform: scale(1.1);
+}
+.circle.done::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--orange);
+  opacity: 0.3;
+  animation: ringPulse 0.4s ease forwards;
+}
+@keyframes ringPulse {
+  from { opacity:0.5; transform:scale(0.8); }
+  to   { opacity:0; transform:scale(1.4); }
+}
 
-  .circle {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    color: transparent;
-    font-size: 14px;
-  }
-  .circle.done { background: var(--green-mid); border-color: var(--green-mid); color: white; }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 15px; color: var(--text); font-weight: 500; }
+.item-title.done { color: var(--text-ter); text-decoration: line-through; text-decoration-color: var(--text-ter); }
+.item-sub { font-size: 12px; color: var(--text-ter); margin-top: 2px; }
 
-  .item-body { flex: 1; }
-  .item-title { font-size: 15px; color: var(--text); font-weight: 500; }
-  .item-title.done { color: var(--text-ter); text-decoration: line-through; text-decoration-color: var(--text-ter); }
-  .item-sub { font-size: 12px; color: var(--text-ter); margin-top: 2px; }
+.badge {
+  font-size: 10px; padding: 3px 9px; border-radius: 20px;
+  font-weight: 700; white-space: nowrap; letter-spacing: 0.05em; flex-shrink: 0;
+}
+.badge-warn {
+  background: rgba(255,102,36,0.12); color: var(--orange);
+  border: 0.5px solid rgba(255,102,36,0.25);
+}
+.badge-key {
+  background: rgba(53,92,245,0.1); color: var(--blue);
+  border: 0.5px solid rgba(53,92,245,0.2);
+}
 
-  .badge {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .badge-warn { background: var(--amber-light); color: var(--amber); }
-  .badge-key { background: var(--blue-light); color: var(--blue); }
+/* ── CARD SPACER ── */
+.card-spacer { height: 10px; background: var(--cream-bg); }
 
-  .llegue-section {
-    padding: 16px 20px;
-    background: var(--card);
-    border-top: 0.5px solid var(--border);
-    border-bottom: 0.5px solid var(--border);
-    margin-top: 8px;
-  }
-  .llegue-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: var(--radius);
-    border: none;
-    background: var(--green-mid);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: opacity 0.2s;
-  }
-  .llegue-btn:active { opacity: 0.8; }
-  .llegue-btn:disabled { background: var(--gray-mid); cursor: default; opacity: 0.7; }
+/* ── LLEGUE ── */
+.llegue-section {
+  padding: 16px 20px;
+  background: var(--cream-bg);
+  border-bottom: 0.5px solid var(--border);
+}
+.llegue-btn {
+  width: 100%; padding: 16px;
+  border-radius: 16px; border: none;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: white; font-size: 15px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 20px rgba(35,41,168,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.llegue-btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(35,41,168,0.2); }
+.llegue-btn:disabled {
+  background: var(--cream-dark); color: var(--text-ter);
+  cursor: default; box-shadow: none;
+  border: 0.5px solid var(--border);
+}
 
-  .ai-card {
-    margin: 12px 20px;
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    display: none;
-  }
-  .ai-card.visible { display: block; }
-  .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid); flex-shrink: 0; }
-  .ai-label { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; }
-  .ai-time { font-size: 12px; color: var(--text-ter); margin-left: auto; }
-  .ai-body { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
-  .ai-loading { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
-  .ai-dot-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green-mid); animation: pulse 1.2s ease-in-out infinite; }
-  .ai-dot-pulse:nth-child(2) { animation-delay: 0.2s; }
-  .ai-dot-pulse:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+/* ── AI CARD ── */
+.ai-card {
+  margin: 14px 20px;
+  background: var(--navy);
+  border-radius: 16px; padding: 18px;
+  display: none;
+  animation: cardIn 0.4s cubic-bezier(.34,1.2,.64,1);
+}
+.ai-card.visible { display: block; }
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(12px) scale(0.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid rgba(255,255,255,0.1); }
+.ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); flex-shrink: 0; }
+.ai-label { font-size: 11px; font-weight: 800; color: var(--orange); text-transform: uppercase; letter-spacing: 0.1em; }
+.ai-time { font-size: 11px; color: rgba(245,242,236,0.4); margin-left: auto; }
+.ai-body { font-size: 14px; color: rgba(245,242,236,0.9); line-height: 1.7; white-space: pre-wrap; }
 
-  .nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--card);
-    border-top: 0.5px solid var(--border);
-    padding: 8px 0 calc(8px + var(--safe-bot));
-    display: flex;
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding: 6px 0;
-    border: none;
-    background: none;
-    font-family: inherit;
-    cursor: pointer;
-    color: var(--text-ter);
-    font-size: 10px;
-  }
-  .nav-btn.active { color: var(--blue); }
-  .nav-icon { font-size: 22px; line-height: 1; }
+.ai-loading { display: flex; gap: 5px; align-items: center; padding: 6px 0; }
+.ai-dot-pulse {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--orange);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.ai-dot-pulse:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot-pulse:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+  0%,80%,100% { opacity:0.2; transform:scale(0.75); }
+  40%          { opacity:1;   transform:scale(1); }
+}
 
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-ter);
-    font-size: 14px;
-  }
-  .empty-state .big { font-size: 40px; margin-bottom: 8px; }
+/* ── NAV ── */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--navy);
+  padding: 8px 0 calc(8px + var(--safe-bot));
+  display: flex;
+  border-top: none;
+}
+.nav::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--orange), var(--amber), var(--blue));
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 0; border: none; background: none;
+  font-family: inherit; cursor: pointer;
+  color: rgba(245,242,236,0.35); font-size: 10px; letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+.nav-btn.active { color: var(--orange); }
+.nav-icon { font-size: 20px; line-height: 1; }
+
+/* ── STREAK / STATS ── */
+.stats-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; padding: 16px 20px 8px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 0.5px solid var(--border);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.stat-card.visible { opacity: 1; transform: translateY(0); }
+.stat-num { font-size: 28px; font-weight: 800; color: var(--orange); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--text-ter); margin-top: 4px; letter-spacing: 0.3px; }
+
+/* ── COMPLETION BANNER ── */
+.complete-banner {
+  margin: 14px 20px;
+  background: linear-gradient(135deg, var(--orange), var(--amber));
+  border-radius: 16px; padding: 18px 20px;
+  display: none; align-items: center; gap: 14px;
+  animation: cardIn 0.5s cubic-bezier(.34,1.2,.64,1);
+}
+.complete-banner.visible { display: flex; }
+.complete-icon { font-size: 32px; }
+.complete-text {}
+.complete-title { font-size: 16px; font-weight: 800; color: white; }
+.complete-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 2px; }
 </style>
 </head>
 <body>
 
+<!-- SPLASH -->
+<div id="splash">
+  <img src="icon.png" alt="ARETE 1906" onerror="this.style.display='none'">
+  <div id="splash-title">ARETE 1906</div>
+  <div id="splash-sub">EXCELENCIA DIARIA</div>
+  <div id="splash-bar"><div id="splash-bar-fill"></div></div>
+</div>
+
+<!-- HEADER -->
 <div class="header">
   <div class="header-top">
     <div>
-      <div class="header-title">Mi rutina</div>
+      <div class="header-title">ARETE 1906</div>
       <div class="header-date" id="fecha"></div>
     </div>
     <button class="reset-btn" onclick="resetDia()">Reiniciar</button>
@@ -257,51 +336,74 @@
   <div class="progress-wrap">
     <div class="progress-labels">
       <span>Progreso de hoy</span>
-      <span id="prog-text">0 / 0</span>
+      <span id="prog-text">0 / 19</span>
     </div>
-    <div class="progress-track"><div class="progress-fill" id="prog-bar" style="width:0%"></div></div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-bar" style="width:0%"></div>
+    </div>
   </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
-  <button class="tab active" onclick="showTab('manana', this)">☀️ Mañana</button>
-  <button class="tab" onclick="showTab('tarde', this)">🌙 Tarde-noche</button>
+  <button class="tab active" id="tab-btn-manana" onclick="switchTab('manana')">☀️ Mañana</button>
+  <button class="tab" id="tab-btn-tarde" onclick="switchTab('tarde')">🌙 Tarde-noche</button>
 </div>
 
+<!-- TAB MAÑANA -->
 <div id="tab-manana">
+  <div class="stats-row">
+    <div class="stat-card" id="stat-done">
+      <div class="stat-num" id="stat-done-num">0</div>
+      <div class="stat-label">completados hoy</div>
+    </div>
+    <div class="stat-card" id="stat-pct">
+      <div class="stat-num" id="stat-pct-num">0%</div>
+      <div class="stat-label">del día listo</div>
+    </div>
+  </div>
+
+  <div class="complete-banner" id="banner-manana">
+    <div class="complete-icon">🔥</div>
+    <div class="complete-text">
+      <div class="complete-title">Mañana completada</div>
+      <div class="complete-sub">Eso ya es una victoria antes de las 8am</div>
+    </div>
+  </div>
+
   <div class="section-label">Despertar</div>
-  <div class="item" onclick="toggle(this)" data-id="m1">
+  <div class="item" onclick="toggle(this)" data-id="m1" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Despierta sin snooze</div>
       <div class="item-sub">6:00 am · apaga la alarma de inmediato</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m2">
+  <div class="item" onclick="toggle(this)" data-id="m2" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Primer vaso de agua</div>
       <div class="item-sub">6:02 am · antes de cualquier otra cosa</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m3">
+  <div class="item" onclick="toggle(this)" data-id="m3" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Baño — rutina natural</div>
-      <div class="item-sub">6:05 am</div>
+      <div class="item-sub">6:05 am · hasta 20 min si es necesario</div>
     </div>
     <span class="badge badge-warn">flexible</span>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m4">
+  <div class="item" onclick="toggle(this)" data-id="m4" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Ropa de ejercicio</div>
-      <div class="item-sub">6:25 am · ya debió quedar lista anoche</div>
+      <div class="item-sub">6:25 am · ya quedó lista anoche</div>
     </div>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Activación</div>
-  <div class="item" onclick="toggle(this)" data-id="m5">
+  <div class="item" onclick="toggle(this)" data-id="m5" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Salir a caminar 20 min</div>
@@ -309,23 +411,23 @@
     </div>
     <span class="badge badge-key">clave</span>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Preparación</div>
-  <div class="item" onclick="toggle(this)" data-id="m6">
+  <div class="item" onclick="toggle(this)" data-id="m6" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Ducha 15 min</div>
-      <div class="item-sub">6:50 am · termina con 30 seg de agua fría</div>
+      <div class="item-sub">6:50 am · 30 seg de agua fría al final</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m7">
+  <div class="item" onclick="toggle(this)" data-id="m7" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Vestirse para el trabajo</div>
       <div class="item-sub">7:05 am · ropa lista desde anoche</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m8">
+  <div class="item" onclick="toggle(this)" data-id="m8" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Desayuno con proteína</div>
@@ -333,16 +435,16 @@
     </div>
     <span class="badge badge-key">clave</span>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Salida</div>
-  <div class="item" onclick="toggle(this)" data-id="m9">
+  <div class="item" onclick="toggle(this)" data-id="m9" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Calentar la moto 5 min</div>
       <div class="item-sub">7:25 am · respira un momento</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="m10">
+  <div class="item" onclick="toggle(this)" data-id="m10" data-section="manana">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Salir — llegas a las 7:50</div>
@@ -351,11 +453,11 @@
   </div>
 </div>
 
+<!-- TAB TARDE -->
 <div id="tab-tarde" style="display:none;">
-
   <div class="llegue-section">
     <button class="llegue-btn" id="llegue-btn" onclick="llegueACasa()">
-      🏠 Ya llegué a casa
+      🏠&nbsp; Ya llegué a casa
     </button>
   </div>
 
@@ -368,15 +470,23 @@
     <div class="ai-body" id="ai-body"></div>
   </div>
 
+  <div class="complete-banner" id="banner-tarde">
+    <div class="complete-icon">⚡</div>
+    <div class="complete-text">
+      <div class="complete-title">Tarde completada</div>
+      <div class="complete-sub">Día completo. Eso se llama excelencia</div>
+    </div>
+  </div>
+
   <div class="section-label">Llegada</div>
-  <div class="item" onclick="toggle(this)" data-id="t1">
+  <div class="item" onclick="toggle(this)" data-id="t1" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Desconéctate 15 min</div>
       <div class="item-sub">5:00 pm · agua, silencio, reset</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t2">
+  <div class="item" onclick="toggle(this)" data-id="t2" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Un pendiente importante</div>
@@ -384,16 +494,16 @@
     </div>
     <span class="badge badge-key">clave</span>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Cena</div>
-  <div class="item" onclick="toggle(this)" data-id="t3">
+  <div class="item" onclick="toggle(this)" data-id="t3" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Preparar o conseguir cena</div>
       <div class="item-sub">6:15 pm · lista antes de las 7:30</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t4">
+  <div class="item" onclick="toggle(this)" data-id="t4" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Cenar antes de las 8pm</div>
@@ -401,18 +511,18 @@
     </div>
     <span class="badge badge-key">clave</span>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Tiempo libre</div>
-  <div class="item" onclick="toggle(this)" data-id="t5">
+  <div class="item" onclick="toggle(this)" data-id="t5" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Tiempo libre — sin culpa</div>
       <div class="item-sub">7:30 pm · serie, música, lo que quieras</div>
     </div>
   </div>
-
+  <div class="card-spacer"></div>
   <div class="section-label">Cierre del día</div>
-  <div class="item" onclick="toggle(this)" data-id="t6">
+  <div class="item" onclick="toggle(this)" data-id="t6" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">En casa</div>
@@ -420,14 +530,14 @@
     </div>
     <span class="badge badge-warn">límite</span>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t7">
+  <div class="item" onclick="toggle(this)" data-id="t7" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Preparar el mañana</div>
       <div class="item-sub">9:00 pm · ropa lista, pendientes revisados</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t8">
+  <div class="item" onclick="toggle(this)" data-id="t8" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Llamar a tu esposa</div>
@@ -435,14 +545,14 @@
     </div>
     <span class="badge badge-key">clave</span>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t9">
+  <div class="item" onclick="toggle(this)" data-id="t9" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">Teléfono boca abajo</div>
       <div class="item-sub">10:30 pm · sin pantallas</div>
     </div>
   </div>
-  <div class="item" onclick="toggle(this)" data-id="t10">
+  <div class="item" onclick="toggle(this)" data-id="t10" data-section="tarde">
     <div class="circle">✓</div>
     <div class="item-body">
       <div class="item-title">A dormir</div>
@@ -451,34 +561,36 @@
   </div>
 </div>
 
+<!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="showTab('manana', null); setNav(this)">
+  <button class="nav-btn active" id="nav-manana" onclick="switchTab('manana'); setNav(this)">
     <span class="nav-icon">☀️</span>Mañana
   </button>
-  <button class="nav-btn" onclick="showTab('tarde', null); setNav(this)">
+  <button class="nav-btn" id="nav-tarde" onclick="switchTab('tarde'); setNav(this)">
     <span class="nav-icon">🌙</span>Tarde
   </button>
 </nav>
 
 <script>
-const STORAGE_KEY = 'rutina_v1';
-const LLEGUE_KEY = 'rutina_llegue';
+const STORAGE_KEY = 'arete1906_v2';
+const LLEGUE_KEY  = 'arete1906_llegue_v2';
+const TOTAL = 19;
+const M_TOTAL = 10;
+const T_TOTAL = 9;
 
-function hoy() {
-  return new Date().toISOString().slice(0, 10);
-}
+function hoy() { return new Date().toISOString().slice(0,10); }
 
 function cargarEstado() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
-    const data = JSON.parse(raw);
-    if (data.fecha !== hoy()) return {};
-    return data.checks || {};
+    const d = JSON.parse(raw);
+    if (d.fecha !== hoy()) return {};
+    return d.checks || {};
   } catch(e) { return {}; }
 }
 
-function guardarEstado(checks) {
+function guardarEstado() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ fecha: hoy(), checks }));
 }
 
@@ -486,22 +598,19 @@ function cargarLlegue() {
   try {
     const raw = localStorage.getItem(LLEGUE_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (data.fecha !== hoy()) return null;
-    return data;
+    const d = JSON.parse(raw);
+    if (d.fecha !== hoy()) return null;
+    return d;
   } catch(e) { return null; }
 }
 
-function guardarLlegue(hora) {
-  localStorage.setItem(LLEGUE_KEY, JSON.stringify({ fecha: hoy(), hora }));
-}
-
 let checks = cargarEstado();
+let currentTab = 'manana';
 
 function toggle(el) {
   const id = el.dataset.id;
   const circle = el.querySelector('.circle');
-  const title = el.querySelector('.item-title');
+  const title  = el.querySelector('.item-title');
   if (checks[id]) {
     delete checks[id];
     circle.classList.remove('done');
@@ -510,61 +619,116 @@ function toggle(el) {
     checks[id] = true;
     circle.classList.add('done');
     title.classList.add('done');
+    // micro bounce
+    el.style.transform = 'scale(1.01)';
+    setTimeout(function(){ el.style.transform = ''; }, 200);
   }
-  guardarEstado(checks);
+  guardarEstado();
   updateProgress();
+  checkBanners();
 }
 
 function aplicarEstado() {
   document.querySelectorAll('.item').forEach(function(el) {
     const id = el.dataset.id;
     const circle = el.querySelector('.circle');
-    const title = el.querySelector('.item-title');
-    if (checks[id]) {
-      circle.classList.add('done');
-      title.classList.add('done');
-    } else {
-      circle.classList.remove('done');
-      title.classList.remove('done');
-    }
+    const title  = el.querySelector('.item-title');
+    if (checks[id]) { circle.classList.add('done'); title.classList.add('done'); }
+    else { circle.classList.remove('done'); title.classList.remove('done'); }
   });
 }
 
 function updateProgress() {
-  const all = document.querySelectorAll('.item').length;
   const done = Object.keys(checks).length;
-  document.getElementById('prog-text').textContent = done + ' / ' + all;
-  const pct = all > 0 ? Math.round((done / all) * 100) : 0;
+  document.getElementById('prog-text').textContent = done + ' / ' + TOTAL;
+  const pct = Math.round((done / TOTAL) * 100);
   document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('stat-done-num').textContent = done;
+  document.getElementById('stat-pct-num').textContent  = pct + '%';
+}
+
+function checkBanners() {
+  const mDone = ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10'].filter(function(k){ return checks[k]; }).length;
+  const tDone = ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'].filter(function(k){ return checks[k]; }).length;
+  const bm = document.getElementById('banner-manana');
+  const bt = document.getElementById('banner-tarde');
+  if (mDone === M_TOTAL) bm.classList.add('visible'); else bm.classList.remove('visible');
+  if (tDone === T_TOTAL) bt.classList.add('visible'); else bt.classList.remove('visible');
 }
 
 function resetDia() {
   if (!confirm('¿Reiniciar todos los checks de hoy?')) return;
   checks = {};
-  guardarEstado(checks);
+  guardarEstado();
   localStorage.removeItem(LLEGUE_KEY);
   aplicarEstado();
   updateProgress();
+  checkBanners();
   document.getElementById('ai-card').classList.remove('visible');
-  document.getElementById('llegue-btn').disabled = false;
-  document.getElementById('llegue-btn').textContent = '🏠 Ya llegué a casa';
+  document.getElementById('banner-manana').classList.remove('visible');
+  document.getElementById('banner-tarde').classList.remove('visible');
+  const btn = document.getElementById('llegue-btn');
+  btn.disabled = false;
+  btn.innerHTML = '🏠&nbsp; Ya llegué a casa';
 }
 
-function showTab(name, btn) {
+function switchTab(name) {
+  currentTab = name;
   document.getElementById('tab-manana').style.display = name === 'manana' ? 'block' : 'none';
-  document.getElementById('tab-tarde').style.display = name === 'tarde' ? 'block' : 'none';
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  updateProgress();
+  document.getElementById('tab-tarde').style.display  = name === 'tarde'  ? 'block' : 'none';
+  document.getElementById('tab-btn-manana').classList.toggle('active', name === 'manana');
+  document.getElementById('tab-btn-tarde').classList.toggle('active',  name === 'tarde');
+  setTimeout(animateItems, 50);
 }
 
 function setNav(btn) {
-  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
 }
 
-function formatHora(date) {
-  return date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+function animateItems() {
+  const section = currentTab === 'manana' ? 'manana' : 'tarde';
+  const items = document.querySelectorAll('#tab-' + section + ' .item');
+  items.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-18px)';
+    el.style.transition = 'none';
+    setTimeout(function() {
+      el.style.transition = 'opacity 0.35s ease ' + (i * 0.045) + 's, transform 0.35s ease ' + (i * 0.045) + 's, background 0.15s';
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+    }, 20);
+  });
+  const stats = document.querySelectorAll('.stat-card');
+  stats.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    setTimeout(function() {
+      el.style.transition = 'opacity 0.35s ease ' + (i * 0.08) + 's, transform 0.35s ease ' + (i * 0.08) + 's';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 20);
+  });
+}
+
+// SCROLL animation observer
+function setupScrollObserver() {
+  if (!window.IntersectionObserver) return;
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+  document.querySelectorAll('.item, .stat-card').forEach(function(el) {
+    obs.observe(el);
+  });
+}
+
+function formatHora(d) {
+  return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 }
 
 function llegueACasa() {
@@ -572,40 +736,37 @@ function llegueACasa() {
   const horaStr = formatHora(ahora);
   const horaH = ahora.getHours();
   const horaM = ahora.getMinutes();
-  const horaDecimal = horaH + horaM / 60;
-
-  guardarLlegue(horaStr);
+  localStorage.setItem(LLEGUE_KEY, JSON.stringify({ fecha: hoy(), hora: horaStr }));
 
   const btn = document.getElementById('llegue-btn');
   btn.disabled = true;
-  btn.textContent = '✓ Llegaste a las ' + horaStr;
+  btn.innerHTML = '✓&nbsp; Llegaste a las ' + horaStr;
 
   const card = document.getElementById('ai-card');
   card.classList.add('visible');
   document.getElementById('ai-time').textContent = horaStr;
   document.getElementById('ai-body').innerHTML = '<div class="ai-loading"><div class="ai-dot-pulse"></div><div class="ai-dot-pulse"></div><div class="ai-dot-pulse"></div></div>';
 
-  const prompt = `Eres el asistente personal de Miguel, un hombre de 30 años en proceso de mejorar su estilo de vida. Miguel tiene esta rutina de tarde-noche:
-
-- 5:00 pm: Llegar y desconectarse 15 min
-- 5:15 pm: Hacer un pendiente importante (60 min)
+  const prompt = `Eres el asistente personal de Miguel, un hombre de 30 años mejorando su estilo de vida. Su rutina tarde-noche ideal:
+- 5:00 pm: Desconectarse 15 min
+- 5:15 pm: Un pendiente importante (60 min)
 - 6:15 pm: Preparar cena
-- 7:00 pm: Cenar (REGLA CLAVE: cenar antes de las 8pm)
+- 7:00 pm: Cenar (REGLA CLAVE: antes de las 8pm)
 - 7:30 pm: Tiempo libre
-- 9:00 pm: Estar en casa (límite inamovible)
-- 9:00 pm: Preparar el mañana (ropa lista, pendientes)
+- 9:00 pm: En casa (límite inamovible)
+- 9:00 pm: Preparar el mañana
 - 9:30 pm: Llamar a su esposa
 - 10:30 pm: Teléfono boca abajo
 - 11:00 pm: Dormir
 
-Miguel acaba de llegar a casa a las ${horaStr}. Son las ${horaH}:${String(horaM).padStart(2,'0')} horas.
+Miguel llegó a casa a las ${horaStr} (${horaH}:${String(horaM).padStart(2,'0')} hrs).
 
-Analiza la hora de llegada y dile de forma cálida, directa y sin culpa:
-1. Qué pasos todavía puede hacer (y en qué orden realista)
-2. Cuáles ya no aplican por la hora (sin drama, sin regaño)
+Dile de forma cálida, directa y sin culpa:
+1. Qué puede hacer todavía y en qué orden realista
+2. Qué ya no aplica por la hora (sin drama ni regaño)
 3. Una sola cosa concreta en la que enfocarse esta noche
 
-Máximo 120 palabras. Tono de amigo que te conoce bien, no de coach motivacional. En español mexicano natural.`;
+Máximo 110 palabras. Tono de amigo cercano. Español mexicano natural. Sin saludos, directo al punto.`;
 
   fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -616,32 +777,48 @@ Máximo 120 palabras. Tono de amigo que te conoce bien, no de coach motivacional
       messages: [{ role: 'user', content: prompt }]
     })
   })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    const texto = data.content && data.content[0] ? data.content[0].text : 'No pude conectarme. Pero ya llegaste — eso ya cuenta.';
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    const texto = data.content && data.content[0] ? data.content[0].text : 'Sin conexión. Ya llegaste — eso ya cuenta. Prepara el mañana y llámale a tu esposa.';
     document.getElementById('ai-body').textContent = texto;
   })
-  .catch(function() {
-    document.getElementById('ai-body').textContent = 'Sin conexión ahorita. Pero ya llegaste a casa — eso ya es una victoria. Prepara el mañana y llámale a tu esposa.';
+  .catch(function(){
+    document.getElementById('ai-body').textContent = 'Sin conexión. Pero ya llegaste — eso ya es una victoria. Prepara el mañana y llámale a tu esposa.';
   });
 }
 
 function setFecha() {
   const d = new Date();
-  const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const dias   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('fecha').textContent = dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
 }
 
-const llegueGuardado = cargarLlegue();
-if (llegueGuardado) {
-  document.getElementById('llegue-btn').disabled = true;
-  document.getElementById('llegue-btn').textContent = '✓ Llegaste a las ' + llegueGuardado.hora;
-}
-
+// Init
 setFecha();
 aplicarEstado();
 updateProgress();
+checkBanners();
+
+const llegueGuardado = cargarLlegue();
+if (llegueGuardado) {
+  const btn = document.getElementById('llegue-btn');
+  btn.disabled = true;
+  btn.innerHTML = '✓&nbsp; Llegaste a las ' + llegueGuardado.hora;
+}
+
+// Splash
+setTimeout(function(){
+  document.getElementById('splash-bar-fill').style.width = '100%';
+}, 100);
+setTimeout(function(){
+  document.getElementById('splash').classList.add('hidden');
+  setTimeout(function(){
+    document.getElementById('splash').style.display = 'none';
+    setupScrollObserver();
+    animateItems();
+  }, 650);
+}, 2000);
 </script>
 </body>
 </html>
